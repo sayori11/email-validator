@@ -1,0 +1,17 @@
+- name: Deploy
+  hosts: all
+  remote_user: "{{ nonroot_user }}"
+  gather_facts: false
+  
+  tasks:
+   - name: Pull repo
+     git:
+      repo: "{{ git_repo }}"
+      version: master
+      dest: ~/{{ repo }}
+      accept_hostkey: true
+      recursive: no
+      force: yes
+
+   - name: Start docker-compose
+     shell: cd {{ repo }} && docker-compose up --remove-orphans -d --build {{ service }}

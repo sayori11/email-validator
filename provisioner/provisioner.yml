@@ -1,0 +1,34 @@
+- name: Provision a server
+  hosts: all
+  gather_facts: true
+  become: true
+  remote_user: root
+
+  tasks:
+   - name: Update apt
+     apt:
+      update_cache: true
+      upgrade: true
+      cache_valid_time: 86400
+
+   - name: Create a non-root user
+     user:
+      name: "{{ nonroot_user }}"
+      groups: sudo
+      append: true
+      shell: /bin/bash
+      password: "{{ nonroot_pw | password_hash('sha512', nonroot_pw_salt) }}"
+     
+   - name: Copy SSH ID
+     ansible.posix.authorized_key:
+      user: "{{ nonroot_user }}"
+      state: present
+      key: "{{ lookup('file', nonroot_ssh_public_key_file) }}"
+
+   - name: Install Docker
+     import_role:
+      name: geerlingguy.docker
+     vars:
+      docker_compose_version: "1.27.4"
+      docker_users:
+        - "{{ nonroot_user }}"

@@ -10,7 +10,6 @@ app = FastAPI(
     title="Email validator",
     description="API for validating emails",
     version="1.0.0",
-    root_path="/api" 
 )
 
 app.add_middleware(
