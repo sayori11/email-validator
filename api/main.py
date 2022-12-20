@@ -36,6 +36,13 @@ async def exception_handler(request: Request, exc: CustomException):
 
 disposable_emails = get_disposable_emails()
 
+@app.get('/')
+def index():
+    return {
+        "status": "API is working"
+    }
+
+
 @app.get('/validate')
 def validate(email: str):
     try:
