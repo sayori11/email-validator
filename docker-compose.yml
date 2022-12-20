@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    ports:
+      - 8000:8000
+    environment:
+      - VIRTUAL_HOST=113.199.224.29
+      - VIRTUAL_PORT=8000
+      
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: true
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./volumes/vhost.d:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - nginx_html:/usr/share/nginx/html
+
+volumes:
+  certs:
+  nginx_html:
